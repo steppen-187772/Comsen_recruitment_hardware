@@ -62,6 +62,7 @@ static void test_calculator_engine(void)
   CHECK(calculator_evaluate("1", CALC_ANGLE_DEG, 1u, answer, NULL) == CALC_SYNTAX);
 
   check_expression("1 + 2*3", CALC_ANGLE_DEG, 1u, CALC_OK, 7.0f, 0.0f);
+  check_expression("5-2", CALC_ANGLE_DEG, 1u, CALC_OK, 3.0f, 0.0f);
   check_expression("(1+2)*3", CALC_ANGLE_DEG, 1u, CALC_OK, 9.0f, 0.0f);
   check_expression("2^3^2", CALC_ANGLE_DEG, 1u, CALC_OK, 512.0f, 0.0f);
   check_expression("-2^2", CALC_ANGLE_DEG, 1u, CALC_OK, -4.0f, 0.0f);
@@ -78,7 +79,9 @@ static void test_calculator_engine(void)
   check_expression("pi", CALC_ANGLE_DEG, 1u, CALC_OK, PI_F, 0.0f);
   check_expression("PI", CALC_ANGLE_DEG, 1u, CALC_OK, PI_F, 0.0f);
   check_expression("π", CALC_ANGLE_DEG, 1u, CALC_OK, PI_F, 0.0f);
+  check_expression("2π", CALC_ANGLE_DEG, 1u, CALC_OK, 2.0f * PI_F, 0.0f);
   check_expression("√9", CALC_ANGLE_DEG, 1u, CALC_OK, 3.0f, 0.0f);
+  check_expression("2√9", CALC_ANGLE_DEG, 1u, CALC_OK, 6.0f, 0.0f);
 
   check_expression("sin(30)", CALC_ANGLE_DEG, 1u, CALC_OK, 0.5f, 0.0f);
   check_expression("cos(60)", CALC_ANGLE_DEG, 1u, CALC_OK, 0.5f, 0.0f);
@@ -108,11 +111,14 @@ static void test_calculator_engine(void)
   check_expression("0^2", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 0.0f);
   check_expression("0^-1", CALC_ANGLE_RAD, 1u, CALC_DIV_ZERO, 0.0f, 0.0f);
   check_expression("2^-3", CALC_ANGLE_RAD, 1u, CALC_OK, 0.125f, 0.0f);
+  check_expression("(-1)^0.5", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 1.0f);
   check_expression("i*i", CALC_ANGLE_RAD, 1u, CALC_OK, -1.0f, 0.0f);
   check_expression("sqrt(-4)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 2.0f);
   check_expression("sqrt(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, 1.0f, 1.0f);
   check_expression("ln(-1)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, PI_F);
   check_expression("log(-1)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 1.36437635f);
+  check_expression("ln(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.69314718f, PI_F / 2.0f);
+  check_expression("log(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.30103f, 1.36437635f);
   check_expression("exp(i)", CALC_ANGLE_RAD, 1u, CALC_OK, cosf(1.0f), sinf(1.0f));
   check_expression("sin(i)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, sinhf(1.0f));
   check_expression("cos(i)", CALC_ANGLE_RAD, 1u, CALC_OK, coshf(1.0f), 0.0f);
@@ -127,11 +133,14 @@ static void test_calculator_engine(void)
   check_expression("asin(2)", CALC_ANGLE_RAD, 1u, CALC_OK, PI_F / 2.0f, -1.3169579f);
   check_expression("acos(2)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 1.3169579f);
   check_expression("asin(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 1.44363548f);
+  check_expression("acos(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, -1.44363548f);
+  check_expression("atan(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, PI_F / 2.0f, 0.54930614f);
   check_expression("3∠90", CALC_ANGLE_DEG, 1u, CALC_OK, 0.0f, 3.0f);
 
   check_expression("asin(2)", CALC_ANGLE_RAD, 0u, CALC_DOMAIN, 0.0f, 0.0f);
   check_expression("acos(2)", CALC_ANGLE_RAD, 0u, CALC_DOMAIN, 0.0f, 0.0f);
   check_expression("log(-1)", CALC_ANGLE_RAD, 0u, CALC_DOMAIN, 0.0f, 0.0f);
+  check_expression("(-1)^0.5", CALC_ANGLE_RAD, 0u, CALC_DOMAIN, 0.0f, 0.0f);
   check_expression("ln(0)", CALC_ANGLE_RAD, 1u, CALC_DOMAIN, 0.0f, 0.0f);
   check_expression("1e38*1e38", CALC_ANGLE_RAD, 1u, CALC_DOMAIN, 0.0f, 0.0f);
   check_expression("1/0", CALC_ANGLE_RAD, 1u, CALC_DIV_ZERO, 0.0f, 0.0f);
@@ -149,7 +158,15 @@ static void test_calculator_engine(void)
   check_expression("i2", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
   check_expression("1@", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
   check_expression("1∠i", CALC_ANGLE_DEG, 1u, CALC_DOMAIN, 0.0f, 0.0f);
+  check_expression("\xCFx", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
+  check_expression("\xE2xx", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
   check_expression("unknown(1)", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
+  check_expression("sin(1", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
+  check_expression(
+      "sin(sin(sin(sin(sin(sin(sin(sin(sin(sin(sin(sin(sin(sin(sin(sin(sin(1)))))))))))))))))",
+      CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
+  check_expression("2^(2^(2^(2^(2^(2^(2^(2^(2^(2^(2^(2^(2^(2^(2^(2^(2^1)))))))))))))))))",
+                   CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
   check_expression("(((((((((((((((((((1)))))))))))))))))))", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f,
                    0.0f);
   check_expression("i∠90", CALC_ANGLE_DEG, 1u, CALC_OK, -1.0f, 0.0f);
@@ -192,6 +209,8 @@ static void test_format(void)
   check_format(&value, 16u, "1E-4");
   value = (calc_complex_t){9.9999999f, 0.0f};
   check_format(&value, 16u, "10");
+  value = (calc_complex_t){1.9999996f, 0.0f};
+  check_format(&value, 16u, "2");
   value = (calc_complex_t){2.6f, 0.0f};
   check_format(&value, 2u, "3");
   value = (calc_complex_t){999999999.0f, 0.0f};
@@ -200,6 +219,7 @@ static void test_format(void)
   check_format(&value, 16u, "1E10");
   value = (calc_complex_t){1.0e20f, 0.0f};
   check_format(&value, 16u, "1E20");
+  CHECK(calculator_format(&value, 1u, output) > 0u);
   value = (calc_complex_t){1.0e-20f, 0.0f};
   check_format(&value, 16u, "1E-20");
   value = (calc_complex_t){1.0e-38f, 0.0f};
