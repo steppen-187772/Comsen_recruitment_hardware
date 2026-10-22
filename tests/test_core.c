@@ -130,7 +130,7 @@ static void test_calculator_engine(void)
   check_expression("unknown(1)", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
   check_expression("(((((((((((((((((((1)))))))))))))))))))", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f,
                    0.0f);
-  check_expression("i∠90", CALC_ANGLE_DEG, 1u, CALC_DOMAIN, 0.0f, 0.0f);
+  check_expression("i∠90", CALC_ANGLE_DEG, 1u, CALC_OK, -1.0f, 0.0f);
 
   CHECK(calculator_solve_linear(2.0f, -6.0f, &root) == CALC_OK);
   CHECK(nearly_equal(root, 3.0f));
