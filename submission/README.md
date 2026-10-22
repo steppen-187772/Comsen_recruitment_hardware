@@ -1,5 +1,7 @@
 # STM32 触摸计算器 — 提交工程
 
+[![CI](https://github.com/steppen-187772/Comsen_recruitment_hardware/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/steppen-187772/Comsen_recruitment_hardware/actions/workflows/ci.yml)
+
 - 姓名：孔紫仪
 - 年级：大一
 - 专业：光学与电子信息
@@ -92,6 +94,7 @@ STM32_Programmer_CLI -c port=SWD -w build/Release/software.hex 0x08000000 -v -rs
 
 ## 8. 验收视频
 
-高清验收视频已作为 GitHub Release 附件提交：
+高清验收视频已作为 GitHub Release 附件提交，文件名为
+`Comsen招新-硬件组-大一-孔紫仪.mp4`：
 
 [观看或下载验收视频](https://github.com/steppen-187772/Comsen_recruitment_hardware/releases/tag/submission-v1)
