@@ -28,7 +28,7 @@
 submission/
 ├── README.md              ← 本文件
 ├── REPORT.md              ← 报告（提交前请确认是本人最终版本）
-├── video/                 ← 视频说明：高清视频见releases
+├── video/                 ← 视频说明；高清视频见Releases
 ├── innovations/           ← 创新模块：数字雨锁屏 + 哭脸报错（不参与主固件构建）
 ├── CMakeLists.txt
 ├── CMakePresets.json
