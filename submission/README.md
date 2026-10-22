@@ -94,7 +94,8 @@ STM32_Programmer_CLI -c port=SWD -w build/Release/software.hex 0x08000000 -v -rs
 
 ## 8. 验收视频
 
-高清验收视频已作为 GitHub Release 附件提交，文件名为
-`Comsen招新-硬件组-大一-孔紫仪.mp4`：
+高清验收视频已作为 GitHub Release 附件提交。Release 标题为
+`Comsen招新-硬件组-大一-孔紫仪`；GitHub 会把中文附件名自动转义为
+`Comsen.-.-.-.mp4`：
 
 [观看或下载验收视频](https://github.com/steppen-187772/Comsen_recruitment_hardware/releases/tag/submission-v1)
