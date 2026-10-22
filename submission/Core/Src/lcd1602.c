@@ -46,8 +46,8 @@ static void lcd_write_nibble_raw(uint8_t nibble)
 static void lcd_write_byte(uint8_t value, uint8_t rs)
 {
   HAL_GPIO_WritePin(LCD_RS_PORT, LCD_RS_PIN, rs ? GPIO_PIN_SET : GPIO_PIN_RESET);
-  lcd_write_nibble_raw((uint8_t)(value >> 4));      /* 高 4 位 */
-  lcd_write_nibble_raw((uint8_t)(value & 0x0Fu));   /* 低 4 位 */
+  lcd_write_nibble_raw((uint8_t)(value >> 4));    /* 高 4 位 */
+  lcd_write_nibble_raw((uint8_t)(value & 0x0Fu)); /* 低 4 位 */
 }
 
 static void lcd_cmd(uint8_t cmd)
@@ -55,7 +55,7 @@ static void lcd_cmd(uint8_t cmd)
   lcd_write_byte(cmd, 0u);
   if ((cmd == 0x01u) || (cmd == 0x02u))
   {
-    bsp_delay_ms(LCD_CLEAR_MS);                     /* 清屏/回原点要等久一点 */
+    bsp_delay_ms(LCD_CLEAR_MS); /* 清屏/回原点要等久一点 */
   }
 }
 
@@ -82,12 +82,12 @@ void lcd1602_define_char(uint8_t slot, const uint8_t rows[8])
   {
     return;
   }
-  lcd_cmd((uint8_t)(0x40u | (uint8_t)(slot << 3)));   /* CGRAM 地址 */
+  lcd_cmd((uint8_t)(0x40u | (uint8_t)(slot << 3))); /* CGRAM 地址 */
   for (i = 0u; i < 8u; i++)
   {
-    lcd_data(rows[i]);                                /* 每行只要低 5 位有效 */
+    lcd_data(rows[i]); /* 每行只要低 5 位有效 */
   }
-  lcd_set_cursor(0u, 0u);                             /* 回到 DDRAM */
+  lcd_set_cursor(0u, 0u); /* 回到 DDRAM */
 }
 
 void lcd1602_init(void)
@@ -107,19 +107,18 @@ void lcd1602_init(void)
   bsp_delay_ms(1u);
   lcd_write_nibble_raw(0x03u);
   bsp_delay_ms(1u);
-  lcd_write_nibble_raw(0x02u);     /* 从这里开始进入 4 位模式 */
+  lcd_write_nibble_raw(0x02u); /* 从这里开始进入 4 位模式 */
   bsp_delay_ms(1u);
 
-  lcd_cmd(0x28u);                  /* 4 位、2 行、5x8 点阵 */
-  lcd_cmd(0x0Cu);                  /* 开显示、关光标、不闪烁 */
-  lcd_cmd(0x06u);                  /* 写入后光标右移，画面不滚动 */
-  lcd_cmd(0x01u);                  /* 清屏 */
+  lcd_cmd(0x28u); /* 4 位、2 行、5x8 点阵 */
+  lcd_cmd(0x0Cu); /* 开显示、关光标、不闪烁 */
+  lcd_cmd(0x06u); /* 写入后光标右移，画面不滚动 */
+  lcd_cmd(0x01u); /* 清屏 */
 
   /* 给"角度/极坐标"符号准备一个自定义字符，占用槽位 LCD1602_CHAR_ANGLE */
   {
-    static const uint8_t angle_char[8] =
-    {
-      0x01u, 0x02u, 0x04u, 0x08u, 0x10u, 0x1Fu, 0x00u, 0x00u   /* 一个 ∠ 形状 */
+    static const uint8_t angle_char[8] = {
+        0x01u, 0x02u, 0x04u, 0x08u, 0x10u, 0x1Fu, 0x00u, 0x00u /* 一个 ∠ 形状 */
     };
     lcd1602_define_char(LCD1602_CHAR_ANGLE, angle_char);
   }
@@ -143,20 +142,18 @@ void lcd1602_write_lines(const char line1[16], const char line2[16])
   }
 }
 
-void lcd1602_write_frame(const char line1[16], const char line2[16],
-                         uint8_t cursor_enabled, uint8_t cursor_row,
-                         uint8_t cursor_column)
+void lcd1602_write_frame(const char line1[16], const char line2[16], uint8_t cursor_enabled,
+                         uint8_t cursor_row, uint8_t cursor_column)
 {
   lcd1602_write_lines(line1, line2);
 
   if (cursor_enabled != 0u)
   {
-    lcd_cmd(0x0Fu);                            /* 开显示 + 下划线光标 + 闪烁 */
-    lcd_set_cursor((uint8_t)(cursor_row != 0u ? 1u : 0u),
-                   (uint8_t)(cursor_column % 16u));
+    lcd_cmd(0x0Fu); /* 开显示 + 下划线光标 + 闪烁 */
+    lcd_set_cursor((uint8_t)(cursor_row != 0u ? 1u : 0u), (uint8_t)(cursor_column % 16u));
   }
   else
   {
-    lcd_cmd(0x0Cu);                            /* 只要显示 */
+    lcd_cmd(0x0Cu); /* 只要显示 */
   }
 }

@@ -23,10 +23,8 @@ typedef enum
   CALC_DIV_ZERO
 } calc_status_t;
 
-calc_status_t calculator_evaluate(const char *expression,
-                                  calc_angle_unit_t angle_unit,
-                                  uint8_t allow_complex,
-                                  calc_complex_t answer,
+calc_status_t calculator_evaluate(const char *expression, calc_angle_unit_t angle_unit,
+                                  uint8_t allow_complex, calc_complex_t answer,
                                   calc_complex_t *result);
 
 calc_status_t calculator_solve_linear(float a, float b, float *x);

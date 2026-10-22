@@ -20,9 +20,9 @@
  * 复数开关：allow_complex == 0 时，出现虚部或需要复数才有意义的运算返回 CALC_DOMAIN
  */
 
-#define MAX_DEPTH 16u              /* 括号/函数嵌套上限，防止栈被递归吃光 */
-#define WORD_MAX  6u
-#define EPS       1e-6f
+#define MAX_DEPTH 16u /* 括号/函数嵌套上限，防止栈被递归吃光 */
+#define WORD_MAX 6u
+#define EPS 1e-6f
 
 typedef struct
 {
@@ -55,8 +55,7 @@ static calc_complex_t c_sub(calc_complex_t a, calc_complex_t b)
 
 static calc_complex_t c_mul(calc_complex_t a, calc_complex_t b)
 {
-  return cplx((a.real * b.real) - (a.imag * b.imag),
-              (a.real * b.imag) + (a.imag * b.real));
+  return cplx((a.real * b.real) - (a.imag * b.imag), (a.real * b.imag) + (a.imag * b.real));
 }
 
 static calc_complex_t c_neg(calc_complex_t a)
@@ -81,7 +80,7 @@ static uint8_t c_is_zero(calc_complex_t a)
 
 static void set_error(parser_t *ps, calc_status_t code)
 {
-  if (ps->error == CALC_OK)         /* 只保留第一个错误 */
+  if (ps->error == CALC_OK) /* 只保留第一个错误 */
   {
     ps->error = code;
   }
@@ -197,7 +196,7 @@ static calc_complex_t c_pow(parser_t *ps, calc_complex_t a, calc_complex_t b)
 
     if ((base > 0.0f) || (expo == floorf(expo)))
     {
-      float r = powf(base, expo);          /* 负底数 + 整数指数，powf 本身就有定义 */
+      float r = powf(base, expo); /* 负底数 + 整数指数，powf 本身就有定义 */
       check_finite(ps, cplx(r, 0.0f));
       return cplx(r, 0.0f);
     }
@@ -254,8 +253,7 @@ static uint8_t match_word(parser_t *ps, const char *word)
 static uint8_t word_boundary(parser_t *ps)
 {
   char c = *ps->p;
-  if (((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')) ||
-      ((c >= '0') && (c <= '9')))
+  if (((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')) || ((c >= '0') && (c <= '9')))
   {
     return 0u;
   }
@@ -273,16 +271,16 @@ static uint8_t starts_primary(const char *p)
   }
   if (((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')))
   {
-    return 1u;     /* 函数名/常数，用于隐式乘法：2sin(30) */
+    return 1u; /* 函数名/常数，用于隐式乘法：2sin(30) */
   }
   if (((unsigned char)c == 0xCFu) && ((unsigned char)p[1] == 0x80u))
   {
-    return 1u;     /* π */
+    return 1u; /* π */
   }
   if (((unsigned char)c == 0xE2u) && ((unsigned char)p[1] == 0x88u) &&
       ((unsigned char)p[2] == 0x9Au))
   {
-    return 1u;     /* √ */
+    return 1u; /* √ */
   }
   /* 注意：极坐标符号 ∠(E2 88 A0) 是运算符，不能当因子开头，否则 5∠90 会被当成隐式乘法 */
   return 0u;
@@ -358,7 +356,7 @@ static calc_complex_t parse_number(parser_t *ps)
     }
     else
     {
-      ps->p = save;              /* 不是科学计数法，退回去 */
+      ps->p = save; /* 不是科学计数法，退回去 */
     }
   }
 
@@ -369,25 +367,35 @@ static calc_complex_t parse_number(parser_t *ps)
 /* 三角函数/对数等一元函数 */
 typedef enum
 {
-  F_SIN = 0, F_COS, F_TAN, F_ASIN, F_ACOS, F_ATAN,
-  F_SINH, F_COSH, F_TANH, F_LN, F_LOG, F_EXP, F_SQRT, F_ABS,
-  F_ARG, F_CONJ, F_RE, F_IM
+  F_SIN = 0,
+  F_COS,
+  F_TAN,
+  F_ASIN,
+  F_ACOS,
+  F_ATAN,
+  F_SINH,
+  F_COSH,
+  F_TANH,
+  F_LN,
+  F_LOG,
+  F_EXP,
+  F_SQRT,
+  F_ABS,
+  F_ARG,
+  F_CONJ,
+  F_RE,
+  F_IM
 } func_id_t;
 
 static const struct
 {
   const char *name;
   uint8_t id;
-} g_functions[] =
-{
-  { "sin",  F_SIN  }, { "cos",  F_COS  }, { "tan",  F_TAN  },
-  { "asin", F_ASIN }, { "acos", F_ACOS }, { "atan", F_ATAN },
-  { "sinh", F_SINH }, { "cosh", F_COSH }, { "tanh", F_TANH },
-  { "ln",   F_LN   }, { "log",  F_LOG  }, { "lg",   F_LOG  },
-  { "exp",  F_EXP  }, { "sqrt", F_SQRT }, { "abs",  F_ABS  },
-  { "arg",  F_ARG  }, { "conj", F_CONJ }, { "re",   F_RE   },
-  { "im",   F_IM   }
-};
+} g_functions[] = {{"sin", F_SIN},   {"cos", F_COS},   {"tan", F_TAN},   {"asin", F_ASIN},
+                   {"acos", F_ACOS}, {"atan", F_ATAN}, {"sinh", F_SINH}, {"cosh", F_COSH},
+                   {"tanh", F_TANH}, {"ln", F_LN},     {"log", F_LOG},   {"lg", F_LOG},
+                   {"exp", F_EXP},   {"sqrt", F_SQRT}, {"abs", F_ABS},   {"arg", F_ARG},
+                   {"conj", F_CONJ}, {"re", F_RE},     {"im", F_IM}};
 
 static float deg2rad(float d)
 {
@@ -411,97 +419,143 @@ static calc_complex_t apply_function(parser_t *ps, uint8_t id, calc_complex_t x)
 
     switch (id)
     {
-      case F_SIN:  r = cplx(sinf(deg ? deg2rad(v) : v), 0.0f); break;
-      case F_COS:  r = cplx(cosf(deg ? deg2rad(v) : v), 0.0f); break;
-      case F_TAN:
-        r = cplx(tanf(deg ? deg2rad(v) : v), 0.0f);
-        if (!isfinite(r.real)) { set_error(ps, CALC_DOMAIN); r = cplx(0.0f, 0.0f); }
-        break;
-      case F_ASIN:
-        if ((v < -1.0f) || (v > 1.0f))
-        {
-          if (ps->allow_complex == 0u)
-          {
-            set_error(ps, CALC_DOMAIN);
-          }
-          else
-          {
-            r = c_asin(ps, x);           /* 复数支路：asin(2) = π/2 - i·acosh(2) */
-          }
-        }
-        else
-        {
-          float a = asinf(v);
-          r = cplx(deg ? rad2deg(a) : a, 0.0f);
-        }
-        break;
-      case F_ACOS:
-        if ((v < -1.0f) || (v > 1.0f))
-        {
-          if (ps->allow_complex == 0u)
-          {
-            set_error(ps, CALC_DOMAIN);
-          }
-          else
-          {
-            r = c_acos(ps, x);
-          }
-        }
-        else
-        {
-          float a = acosf(v);
-          r = cplx(deg ? rad2deg(a) : a, 0.0f);
-        }
-        break;
-      case F_ATAN:
+    case F_SIN:
+      r = cplx(sinf(deg ? deg2rad(v) : v), 0.0f);
+      break;
+    case F_COS:
+      r = cplx(cosf(deg ? deg2rad(v) : v), 0.0f);
+      break;
+    case F_TAN:
+      r = cplx(tanf(deg ? deg2rad(v) : v), 0.0f);
+      if (!isfinite(r.real))
       {
-        float a = atanf(v);
-        r = cplx(deg ? rad2deg(a) : a, 0.0f);
-        break;
+        set_error(ps, CALC_DOMAIN);
+        r = cplx(0.0f, 0.0f);
       }
-      case F_SINH: r = cplx(sinhf(v), 0.0f); break;
-      case F_COSH: r = cplx(coshf(v), 0.0f); break;
-      case F_TANH: r = cplx(tanhf(v), 0.0f); break;
-      case F_LN:
-        if (v <= 0.0f)
+      break;
+    case F_ASIN:
+      if ((v < -1.0f) || (v > 1.0f))
+      {
+        if (ps->allow_complex == 0u)
         {
-          if (ps->allow_complex == 0u) { set_error(ps, CALC_DOMAIN); }
-          else { r = c_log(ps, x); }
+          set_error(ps, CALC_DOMAIN);
         }
         else
         {
-          r = cplx(logf(v), 0.0f);
+          r = c_asin(ps, x); /* 复数支路：asin(2) = π/2 - i·acosh(2) */
         }
-        break;
-      case F_LOG:
-        if (v <= 0.0f)
+      }
+      else
+      {
+        float a = asinf(v);
+        r = cplx(deg ? rad2deg(a) : a, 0.0f);
+      }
+      break;
+    case F_ACOS:
+      if ((v < -1.0f) || (v > 1.0f))
+      {
+        if (ps->allow_complex == 0u)
         {
-          if (ps->allow_complex == 0u) { set_error(ps, CALC_DOMAIN); }
-          else { r = c_mul(c_log(ps, x), cplx(0.4342944819f, 0.0f)); }
+          set_error(ps, CALC_DOMAIN);
         }
         else
         {
-          r = cplx(log10f(v), 0.0f);
+          r = c_acos(ps, x);
         }
-        break;
-      case F_EXP:  r = cplx(expf(v), 0.0f); break;
-      case F_SQRT:
-        if (v < 0.0f)
+      }
+      else
+      {
+        float a = acosf(v);
+        r = cplx(deg ? rad2deg(a) : a, 0.0f);
+      }
+      break;
+    case F_ATAN:
+    {
+      float a = atanf(v);
+      r = cplx(deg ? rad2deg(a) : a, 0.0f);
+      break;
+    }
+    case F_SINH:
+      r = cplx(sinhf(v), 0.0f);
+      break;
+    case F_COSH:
+      r = cplx(coshf(v), 0.0f);
+      break;
+    case F_TANH:
+      r = cplx(tanhf(v), 0.0f);
+      break;
+    case F_LN:
+      if (v <= 0.0f)
+      {
+        if (ps->allow_complex == 0u)
         {
-          if (ps->allow_complex == 0u) { set_error(ps, CALC_DOMAIN); }
-          else { r = cplx(0.0f, sqrtf(-v)); }
+          set_error(ps, CALC_DOMAIN);
         }
         else
         {
-          r = cplx(sqrtf(v), 0.0f);
+          r = c_log(ps, x);
         }
-        break;
-      case F_ABS:  r = cplx(fabsf(v), 0.0f); break;
-      case F_ARG:  r = cplx((v < 0.0f) ? (deg ? 180.0f : 3.14159265f) : 0.0f, 0.0f); break;
-      case F_CONJ: r = x; break;
-      case F_RE:   r = x; break;
-      case F_IM:   r = cplx(0.0f, 0.0f); break;
-      default:     set_error(ps, CALC_SYNTAX); break;
+      }
+      else
+      {
+        r = cplx(logf(v), 0.0f);
+      }
+      break;
+    case F_LOG:
+      if (v <= 0.0f)
+      {
+        if (ps->allow_complex == 0u)
+        {
+          set_error(ps, CALC_DOMAIN);
+        }
+        else
+        {
+          r = c_mul(c_log(ps, x), cplx(0.4342944819f, 0.0f));
+        }
+      }
+      else
+      {
+        r = cplx(log10f(v), 0.0f);
+      }
+      break;
+    case F_EXP:
+      r = cplx(expf(v), 0.0f);
+      break;
+    case F_SQRT:
+      if (v < 0.0f)
+      {
+        if (ps->allow_complex == 0u)
+        {
+          set_error(ps, CALC_DOMAIN);
+        }
+        else
+        {
+          r = cplx(0.0f, sqrtf(-v));
+        }
+      }
+      else
+      {
+        r = cplx(sqrtf(v), 0.0f);
+      }
+      break;
+    case F_ABS:
+      r = cplx(fabsf(v), 0.0f);
+      break;
+    case F_ARG:
+      r = cplx((v < 0.0f) ? (deg ? 180.0f : 3.14159265f) : 0.0f, 0.0f);
+      break;
+    case F_CONJ:
+      r = x;
+      break;
+    case F_RE:
+      r = x;
+      break;
+    case F_IM:
+      r = cplx(0.0f, 0.0f);
+      break;
+    default:
+      set_error(ps, CALC_SYNTAX);
+      break;
     }
     check_finite(ps, r);
     return r;
@@ -510,63 +564,69 @@ static calc_complex_t apply_function(parser_t *ps, uint8_t id, calc_complex_t x)
   /* 复数：下面这些按复变函数定义实现（角度统一用弧度） */
   switch (id)
   {
-    case F_EXP:
-      r = c_exp(ps, x);
-      break;
-    case F_LN:
-      r = c_log(ps, x);
-      break;
-    case F_LOG:
-      r = c_mul(c_log(ps, x), cplx(0.4342944819f, 0.0f));
-      break;
-    case F_SQRT:
-      r = c_exp(ps, c_mul(cplx(0.5f, 0.0f), c_log(ps, x)));
-      break;
-    case F_ABS:
-      r = cplx(c_absf(x), 0.0f);
-      break;
-    case F_ARG:
-    {
-      float a = atan2f(x.imag, x.real);
-      r = cplx(deg ? rad2deg(a) : a, 0.0f);
-      break;
-    }
-    case F_CONJ: r = cplx(x.real, -x.imag); break;
-    case F_RE:   r = cplx(x.real, 0.0f); break;
-    case F_IM:   r = cplx(x.imag, 0.0f); break;
-    case F_SIN:  /* sin(a+bi) = sin a·cosh b + i·cos a·sinh b */
-      r = cplx(sinf(x.real) * coshf(x.imag), cosf(x.real) * sinhf(x.imag));
-      break;
-    case F_COS:  /* cos(a+bi) = cos a·cosh b - i·sin a·sinh b */
-      r = cplx(cosf(x.real) * coshf(x.imag), -sinf(x.real) * sinhf(x.imag));
-      break;
-    case F_TAN:
-      r = c_div(ps, cplx(sinf(x.real) * coshf(x.imag), cosf(x.real) * sinhf(x.imag)),
-                    cplx(cosf(x.real) * coshf(x.imag), -sinf(x.real) * sinhf(x.imag)));
-      break;
-    case F_SINH:
-      r = cplx(sinhf(x.real) * cosf(x.imag), coshf(x.real) * sinf(x.imag));
-      break;
-    case F_COSH:
-      r = cplx(coshf(x.real) * cosf(x.imag), sinhf(x.real) * sinf(x.imag));
-      break;
-    case F_TANH:
-      r = c_div(ps, cplx(sinhf(x.real) * cosf(x.imag), coshf(x.real) * sinf(x.imag)),
-                    cplx(coshf(x.real) * cosf(x.imag), sinhf(x.real) * sinf(x.imag)));
-      break;
-    case F_ASIN:
-      r = c_asin(ps, x);
-      break;
-    case F_ACOS:
-      r = c_acos(ps, x);
-      break;
-    case F_ATAN:
-      r = c_atan(ps, x);
-      break;
-    default:
-      set_error(ps, CALC_DOMAIN);        /* 其余函数的复变形式本实现不支持 */
-      r = cplx(0.0f, 0.0f);
-      break;
+  case F_EXP:
+    r = c_exp(ps, x);
+    break;
+  case F_LN:
+    r = c_log(ps, x);
+    break;
+  case F_LOG:
+    r = c_mul(c_log(ps, x), cplx(0.4342944819f, 0.0f));
+    break;
+  case F_SQRT:
+    r = c_exp(ps, c_mul(cplx(0.5f, 0.0f), c_log(ps, x)));
+    break;
+  case F_ABS:
+    r = cplx(c_absf(x), 0.0f);
+    break;
+  case F_ARG:
+  {
+    float a = atan2f(x.imag, x.real);
+    r = cplx(deg ? rad2deg(a) : a, 0.0f);
+    break;
+  }
+  case F_CONJ:
+    r = cplx(x.real, -x.imag);
+    break;
+  case F_RE:
+    r = cplx(x.real, 0.0f);
+    break;
+  case F_IM:
+    r = cplx(x.imag, 0.0f);
+    break;
+  case F_SIN: /* sin(a+bi) = sin a·cosh b + i·cos a·sinh b */
+    r = cplx(sinf(x.real) * coshf(x.imag), cosf(x.real) * sinhf(x.imag));
+    break;
+  case F_COS: /* cos(a+bi) = cos a·cosh b - i·sin a·sinh b */
+    r = cplx(cosf(x.real) * coshf(x.imag), -sinf(x.real) * sinhf(x.imag));
+    break;
+  case F_TAN:
+    r = c_div(ps, cplx(sinf(x.real) * coshf(x.imag), cosf(x.real) * sinhf(x.imag)),
+              cplx(cosf(x.real) * coshf(x.imag), -sinf(x.real) * sinhf(x.imag)));
+    break;
+  case F_SINH:
+    r = cplx(sinhf(x.real) * cosf(x.imag), coshf(x.real) * sinf(x.imag));
+    break;
+  case F_COSH:
+    r = cplx(coshf(x.real) * cosf(x.imag), sinhf(x.real) * sinf(x.imag));
+    break;
+  case F_TANH:
+    r = c_div(ps, cplx(sinhf(x.real) * cosf(x.imag), coshf(x.real) * sinf(x.imag)),
+              cplx(coshf(x.real) * cosf(x.imag), sinhf(x.real) * sinf(x.imag)));
+    break;
+  case F_ASIN:
+    r = c_asin(ps, x);
+    break;
+  case F_ACOS:
+    r = c_acos(ps, x);
+    break;
+  case F_ATAN:
+    r = c_atan(ps, x);
+    break;
+  default:
+    set_error(ps, CALC_DOMAIN); /* 其余函数的复变形式本实现不支持 */
+    r = cplx(0.0f, 0.0f);
+    break;
   }
   check_finite(ps, r);
   return r;
@@ -610,7 +670,7 @@ static calc_complex_t parse_primary(parser_t *ps)
     if ((unsigned char)ps->p[1] == 0x80u)
     {
       ps->p += 2;
-      return cplx(3.14159265f, 0.0f);        /* π */
+      return cplx(3.14159265f, 0.0f); /* π */
     }
     set_error(ps, CALC_SYNTAX);
     return value;
@@ -619,7 +679,7 @@ static calc_complex_t parse_primary(parser_t *ps)
   {
     if (((unsigned char)ps->p[1] == 0x88u) && ((unsigned char)ps->p[2] == 0x9Au))
     {
-      ps->p += 3;                            /* √ 后面直接跟一个因子：√9、√(2+7) */
+      ps->p += 3; /* √ 后面直接跟一个因子：√9、√(2+7) */
       value = parse_unary(ps);
       return apply_function(ps, F_SQRT, value);
     }
@@ -652,7 +712,7 @@ static calc_complex_t parse_primary(parser_t *ps)
         }
         return apply_function(ps, g_functions[i].id, arg);
       }
-      ps->p = save;          /* 只是名字的一部分，交给常数分支 */
+      ps->p = save; /* 只是名字的一部分，交给常数分支 */
     }
   }
 
@@ -696,7 +756,7 @@ static calc_complex_t parse_unary(parser_t *ps)
   }
   if (accept_char(ps, '-') != 0u)
   {
-    return c_neg(parse_unary(ps));       /* -2^2 = -(2^2)，负号优先级低于乘方 */
+    return c_neg(parse_unary(ps)); /* -2^2 = -(2^2)，负号优先级低于乘方 */
   }
   return parse_power(ps);
 }
@@ -717,7 +777,7 @@ static calc_complex_t parse_power(parser_t *ps)
       return base;
     }
     ps->depth++;
-    exponent = parse_unary(ps);        /* 右结合：2^3^2 = 2^(3^2)；且允许 2^-3 */
+    exponent = parse_unary(ps); /* 右结合：2^3^2 = 2^(3^2)；且允许 2^-3 */
     ps->depth--;
     base = c_pow(ps, base, exponent);
   }
@@ -782,8 +842,7 @@ static calc_complex_t parse_expression(parser_t *ps)
       ps->p++;
       value = c_sub(value, parse_term(ps));
     }
-    else if (((unsigned char)ps->p[0] == 0xE2u) &&
-             ((unsigned char)ps->p[1] == 0x88u) &&
+    else if (((unsigned char)ps->p[0] == 0xE2u) && ((unsigned char)ps->p[1] == 0x88u) &&
              ((unsigned char)ps->p[2] == 0xA0u))
     {
       /* 极坐标：a∠b = a·(cos b + i·sin b) */
@@ -811,16 +870,14 @@ static calc_complex_t parse_expression(parser_t *ps)
 
 /* ---------------- 对外接口 ---------------- */
 
-calc_status_t calculator_evaluate(const char *expression,
-                                  calc_angle_unit_t angle_unit,
-                                  uint8_t allow_complex,
-                                  calc_complex_t answer,
+calc_status_t calculator_evaluate(const char *expression, calc_angle_unit_t angle_unit,
+                                  uint8_t allow_complex, calc_complex_t answer,
                                   calc_complex_t *result)
 {
   parser_t ps;
   calc_complex_t value;
 
-  (void)answer;      /* 官方头文件里这个参数是按值传入的，本实现的返回值走 result */
+  (void)answer; /* 官方头文件里这个参数是按值传入的，本实现的返回值走 result */
 
   if ((expression == 0) || (result == 0))
   {
@@ -842,7 +899,7 @@ calc_status_t calculator_evaluate(const char *expression,
   }
   if (*ps.p != '\0')
   {
-    return CALC_SYNTAX;            /* 还有没吃掉的字符，说明表达式不合法 */
+    return CALC_SYNTAX; /* 还有没吃掉的字符，说明表达式不合法 */
   }
   if ((allow_complex == 0u) && (c_is_real(value) == 0u))
   {
@@ -901,7 +958,7 @@ static uint8_t fixed_try(float a, uint8_t decimals, char *out)
   {
     limit = pow10u(decimals);
     frac_scaled = (uint32_t)((frac * (float)limit) + 0.5f);
-    if (frac_scaled >= limit)         /* 小数进位到整数 */
+    if (frac_scaled >= limit) /* 小数进位到整数 */
     {
       frac_scaled -= limit;
       ip++;
@@ -958,9 +1015,7 @@ static uint8_t fmt_fixed(float a, uint8_t budget, char *out)
     probe /= 10u;
     int_digits++;
   }
-  decimals = (budget > (uint8_t)(int_digits + 1u))
-                 ? (uint8_t)(budget - int_digits - 1u)
-                 : 0u;
+  decimals = (budget > (uint8_t)(int_digits + 1u)) ? (uint8_t)(budget - int_digits - 1u) : 0u;
   if (decimals > 6u)
   {
     decimals = 6u;
@@ -1006,7 +1061,7 @@ static uint8_t sci_try(float a, uint8_t decimals, char *out)
 
   limit = pow10u(decimals);
   scaled = (uint32_t)((mant * (float)limit) + 0.5f);
-  if (scaled >= (10u * limit))         /* 9.9999 -> 10.0：归一化到 1.0 并让指数 +1 */
+  if (scaled >= (10u * limit)) /* 9.9999 -> 10.0：归一化到 1.0 并让指数 +1 */
   {
     scaled = limit;
     exp++;
@@ -1098,12 +1153,16 @@ static uint8_t fmt_real(float v, uint8_t budget, char *out)
   }
   if (isnan(v))
   {
-    out[0] = 'N'; out[1] = 'a'; out[2] = 'N';
+    out[0] = 'N';
+    out[1] = 'a';
+    out[2] = 'N';
     return 3u;
   }
   if (isinf(v))
   {
-    out[0] = 'I'; out[1] = 'n'; out[2] = 'f';
+    out[0] = 'I';
+    out[1] = 'n';
+    out[2] = 'f';
     return 3u;
   }
   if (v < 0.0f)

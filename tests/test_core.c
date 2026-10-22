@@ -15,7 +15,7 @@ static int failures;
   {                                                                                                \
     if (!(condition))                                                                              \
     {                                                                                              \
-      fprintf(stderr, "%s:%d: CHECK failed: %s\n", __FILE__, __LINE__, #condition);               \
+      fprintf(stderr, "%s:%d: CHECK failed: %s\n", __FILE__, __LINE__, #condition);                \
       failures++;                                                                                  \
     }                                                                                              \
   } while (0)
@@ -33,8 +33,7 @@ static void check_expression(const char *expression, calc_angle_unit_t angle, ui
 {
   calc_complex_t answer = {0.0f, 0.0f};
   calc_complex_t result = {NAN, NAN};
-  calc_status_t status =
-    calculator_evaluate(expression, angle, allow_complex, answer, &result);
+  calc_status_t status = calculator_evaluate(expression, angle, allow_complex, answer, &result);
 
   if (status != expected_status)
   {
@@ -129,8 +128,8 @@ static void test_calculator_engine(void)
   check_expression("(1", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
   check_expression("()", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
   check_expression("unknown(1)", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
-  check_expression("(((((((((((((((((((1)))))))))))))))))))", CALC_ANGLE_RAD, 1u, CALC_SYNTAX,
-                   0.0f, 0.0f);
+  check_expression("(((((((((((((((((((1)))))))))))))))))))", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f,
+                   0.0f);
   check_expression("i∠90", CALC_ANGLE_DEG, 1u, CALC_DOMAIN, 0.0f, 0.0f);
 
   CHECK(calculator_solve_linear(2.0f, -6.0f, &root) == CALC_OK);

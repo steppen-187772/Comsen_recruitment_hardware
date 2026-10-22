@@ -13,7 +13,7 @@
  */
 
 #ifndef TOUCH_FILTER_THRESHOLD
-#define TOUCH_FILTER_THRESHOLD 3u   /* 连续 3 拍（约 30ms）一致才算稳定 */
+#define TOUCH_FILTER_THRESHOLD 3u /* 连续 3 拍（约 30ms）一致才算稳定 */
 #endif
 
 void touch_filter_init(touch_filter_t *filter)
@@ -59,7 +59,7 @@ uint32_t touch_filter_update(touch_filter_t *filter, uint32_t raw_bitmap)
     }
     else if (filter->counters[i] > 0u)
     {
-      filter->counters[i]--;                 /* 松手也慢慢降，抗毛刺 */
+      filter->counters[i]--; /* 松手也慢慢降，抗毛刺 */
     }
 
     if (filter->counters[i] >= TOUCH_FILTER_THRESHOLD)
