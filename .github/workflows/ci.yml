@@ -63,7 +63,7 @@ jobs:
             --root . \
             --filter 'submission/Core/Src/calculator_engine.c' \
             --filter 'submission/Core/Src/touch_filter.c' \
-            --txt-metric branch \
+            --txt-metric line \
             --fail-under-line 95 \
             --print-summary
 
