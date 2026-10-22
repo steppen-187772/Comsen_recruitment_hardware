@@ -1,6 +1,6 @@
 # 验收视频
 
-最终验收视频已作为 GitHub Release 附件提交，文件名为：
+最终验收视频已作为 GitHub Release 附件提交。Release 标题为：
 
 ```
 Comsen招新-硬件组-大一-孔紫仪.mp4
@@ -17,3 +17,5 @@ Git 仓库，访问地址已同时写入：
 Release 地址：
 
 <https://github.com/steppen-187772/Comsen_recruitment_hardware/releases/tag/submission-v1>
+
+GitHub 会把 Release 附件中的中文名称转义为 `Comsen.-.-.-.mp4`，链接不受影响。
