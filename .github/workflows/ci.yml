@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+  push:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  embedded-build:
+    name: Embedded firmware build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes cmake ninja-build gcc-arm-none-eabi libnewlib-arm-none-eabi
+
+      - name: Configure
+        working-directory: submission
+        run: cmake -S . -B build/ci -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        working-directory: submission
+        run: cmake --build build/ci
+
+  host-tests:
+    name: Host tests and core coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install test dependencies
+        run: python -m pip install gcovr
+
+      - name: Compile host tests
+        run: |
+          mkdir -p build/host
+          gcc -std=c11 -Wall -Wextra -Werror -O0 --coverage \
+            -Isubmission/Core/Inc \
+            tests/test_core.c \
+            submission/Core/Src/calculator_engine.c \
+            submission/Core/Src/touch_filter.c \
+            -lm -o build/host/core_tests
+
+      - name: Run tests
+        run: ./build/host/core_tests
+
+      - name: Enforce core coverage
+        run: |
+          gcovr \
+            --root . \
+            --filter 'submission/Core/Src/calculator_engine.c' \
+            --filter 'submission/Core/Src/touch_filter.c' \
+            --txt-metric line \
+            --fail-under-line 95 \
+            --print-summary
+
+  formatting:
+    name: C formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: sudo apt-get update && sudo apt-get install --yes clang-format
+
+      - name: Check formatting
+        run: |
+          clang-format --dry-run --Werror \
+            submission/Core/Src/calculator_engine.c \
+            submission/Core/Src/lcd1602.c \
+            submission/Core/Src/touch_filter.c \
+            submission/Core/Inc/calculator_engine.h \
+            submission/Core/Inc/lcd1602.h \
+            submission/Core/Inc/touch_filter.h \
+            tests/test_core.c
+
+  pull-request-title:
+    name: Conventional PR title
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate title
+        shell: bash
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          printf '%s\n' "$PR_TITLE"
+          printf '%s\n' "$PR_TITLE" |
+            grep -Eq '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([^)]+\))?!?: .+$'
