@@ -118,7 +118,7 @@ static void test_calculator_engine(void)
   check_expression("ln(-1)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, PI_F);
   check_expression("log(-1)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 1.36437635f);
   check_expression("ln(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.69314718f, PI_F / 2.0f);
-  check_expression("log(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.30103f, 1.36437635f);
+  check_expression("log(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.30103f, 0.68218818f);
   check_expression("exp(i)", CALC_ANGLE_RAD, 1u, CALC_OK, cosf(1.0f), sinf(1.0f));
   check_expression("sin(i)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, sinhf(1.0f));
   check_expression("cos(i)", CALC_ANGLE_RAD, 1u, CALC_OK, coshf(1.0f), 0.0f);
@@ -133,7 +133,7 @@ static void test_calculator_engine(void)
   check_expression("asin(2)", CALC_ANGLE_RAD, 1u, CALC_OK, PI_F / 2.0f, -1.3169579f);
   check_expression("acos(2)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 1.3169579f);
   check_expression("asin(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 1.44363548f);
-  check_expression("acos(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, -1.44363548f);
+  check_expression("acos(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, PI_F / 2.0f, -1.44363548f);
   check_expression("atan(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, PI_F / 2.0f, 0.54930614f);
   check_expression("3∠90", CALC_ANGLE_DEG, 1u, CALC_OK, 0.0f, 3.0f);
 
