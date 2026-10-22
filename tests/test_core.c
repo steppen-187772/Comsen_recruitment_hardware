@@ -72,7 +72,9 @@ static void test_calculator_engine(void)
   check_expression("1.25e3", CALC_ANGLE_DEG, 1u, CALC_OK, 1250.0f, 0.0f);
   check_expression("1e+2", CALC_ANGLE_DEG, 1u, CALC_OK, 100.0f, 0.0f);
   check_expression("2.5E-3", CALC_ANGLE_DEG, 1u, CALC_OK, 0.0025f, 0.0f);
+  check_expression("1e999999999999999", CALC_ANGLE_DEG, 1u, CALC_OK, 1.0e38f, 0.0f);
   check_expression("2e", CALC_ANGLE_DEG, 1u, CALC_OK, 5.43656366f, 0.0f);
+  check_expression("\t1\t+\t2\t", CALC_ANGLE_DEG, 1u, CALC_OK, 3.0f, 0.0f);
   check_expression("pi", CALC_ANGLE_DEG, 1u, CALC_OK, PI_F, 0.0f);
   check_expression("PI", CALC_ANGLE_DEG, 1u, CALC_OK, PI_F, 0.0f);
   check_expression("π", CALC_ANGLE_DEG, 1u, CALC_OK, PI_F, 0.0f);
@@ -100,10 +102,15 @@ static void test_calculator_engine(void)
   check_expression("conj(3+4i)", CALC_ANGLE_RAD, 1u, CALC_OK, 3.0f, -4.0f);
   check_expression("re(3+4i)", CALC_ANGLE_RAD, 1u, CALC_OK, 3.0f, 0.0f);
   check_expression("im(3+4i)", CALC_ANGLE_RAD, 1u, CALC_OK, 4.0f, 0.0f);
+  check_expression("arg(1)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 0.0f);
   check_expression("3sin(30)", CALC_ANGLE_DEG, 1u, CALC_OK, 1.5f, 0.0f);
 
+  check_expression("0^2", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 0.0f);
+  check_expression("0^-1", CALC_ANGLE_RAD, 1u, CALC_DIV_ZERO, 0.0f, 0.0f);
+  check_expression("2^-3", CALC_ANGLE_RAD, 1u, CALC_OK, 0.125f, 0.0f);
   check_expression("i*i", CALC_ANGLE_RAD, 1u, CALC_OK, -1.0f, 0.0f);
   check_expression("sqrt(-4)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 2.0f);
+  check_expression("sqrt(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, 1.0f, 1.0f);
   check_expression("ln(-1)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, PI_F);
   check_expression("log(-1)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 1.36437635f);
   check_expression("exp(i)", CALC_ANGLE_RAD, 1u, CALC_OK, cosf(1.0f), sinf(1.0f));
@@ -117,8 +124,17 @@ static void test_calculator_engine(void)
   check_expression("abs(3+4i)", CALC_ANGLE_RAD, 1u, CALC_OK, 5.0f, 0.0f);
   check_expression("arg(i)", CALC_ANGLE_RAD, 1u, CALC_OK, PI_F / 2.0f, 0.0f);
   check_expression("arg(i)", CALC_ANGLE_DEG, 1u, CALC_OK, 90.0f, 0.0f);
+  check_expression("asin(2)", CALC_ANGLE_RAD, 1u, CALC_OK, PI_F / 2.0f, -1.3169579f);
+  check_expression("acos(2)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 1.3169579f);
+  check_expression("asin(2i)", CALC_ANGLE_RAD, 1u, CALC_OK, 0.0f, 1.44363548f);
   check_expression("3∠90", CALC_ANGLE_DEG, 1u, CALC_OK, 0.0f, 3.0f);
 
+  check_expression("tan(90)", CALC_ANGLE_DEG, 1u, CALC_DOMAIN, 0.0f, 0.0f);
+  check_expression("asin(2)", CALC_ANGLE_RAD, 0u, CALC_DOMAIN, 0.0f, 0.0f);
+  check_expression("acos(2)", CALC_ANGLE_RAD, 0u, CALC_DOMAIN, 0.0f, 0.0f);
+  check_expression("log(-1)", CALC_ANGLE_RAD, 0u, CALC_DOMAIN, 0.0f, 0.0f);
+  check_expression("ln(0)", CALC_ANGLE_RAD, 1u, CALC_DOMAIN, 0.0f, 0.0f);
+  check_expression("1e38*1e38", CALC_ANGLE_RAD, 1u, CALC_DOMAIN, 0.0f, 0.0f);
   check_expression("1/0", CALC_ANGLE_RAD, 1u, CALC_DIV_ZERO, 0.0f, 0.0f);
   check_expression("0^0", CALC_ANGLE_RAD, 1u, CALC_DOMAIN, 0.0f, 0.0f);
   check_expression("sqrt(-1)", CALC_ANGLE_RAD, 0u, CALC_DOMAIN, 0.0f, 0.0f);
@@ -127,6 +143,13 @@ static void test_calculator_engine(void)
   check_expression("1+", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
   check_expression("(1", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
   check_expression("()", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
+  check_expression(".", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
+  check_expression("sin 1", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
+  check_expression("pi2", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
+  check_expression("e2", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
+  check_expression("i2", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
+  check_expression("1@", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
+  check_expression("1∠i", CALC_ANGLE_DEG, 1u, CALC_DOMAIN, 0.0f, 0.0f);
   check_expression("unknown(1)", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f, 0.0f);
   check_expression("(((((((((((((((((((1)))))))))))))))))))", CALC_ANGLE_RAD, 1u, CALC_SYNTAX, 0.0f,
                    0.0f);
@@ -168,6 +191,20 @@ static void test_format(void)
   check_format(&value, 16u, "1.234568E7");
   value = (calc_complex_t){0.0001f, 0.0f};
   check_format(&value, 16u, "1E-4");
+  value = (calc_complex_t){9.9999999f, 0.0f};
+  check_format(&value, 16u, "10");
+  value = (calc_complex_t){2.6f, 0.0f};
+  check_format(&value, 2u, "3");
+  value = (calc_complex_t){999999999.0f, 0.0f};
+  check_format(&value, 16u, "999999999");
+  value = (calc_complex_t){1.0e10f, 0.0f};
+  check_format(&value, 16u, "1E10");
+  value = (calc_complex_t){1.0e20f, 0.0f};
+  check_format(&value, 16u, "1E20");
+  value = (calc_complex_t){1.0e-20f, 0.0f};
+  check_format(&value, 16u, "1E-20");
+  value = (calc_complex_t){1.0e-38f, 0.0f};
+  check_format(&value, 16u, "1E-38");
   value = (calc_complex_t){0.0f, 2.0f};
   check_format(&value, 16u, "2i");
   value = (calc_complex_t){3.0f, 4.0f};
@@ -178,6 +215,12 @@ static void test_format(void)
   check_format(&value, 16u, "NaN");
   value = (calc_complex_t){INFINITY, 0.0f};
   check_format(&value, 16u, "Inf");
+  value = (calc_complex_t){-42.0f, 0.0f};
+  check_format(&value, 1u, "-");
+  value = (calc_complex_t){1.234f, 0.0f};
+  check_format(&value, 25u, "1.234");
+  value = (calc_complex_t){123456.5f, 98765.4f};
+  CHECK(calculator_format(&value, 24u, output) > 0u);
 }
 
 static void test_touch_filter(void)
