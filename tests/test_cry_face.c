@@ -24,6 +24,18 @@ void lcd1602_define_char(uint8_t slot, const uint8_t rows[8])
   captured_slot = slot;
 }
 
+static void set_line(char line[16], const char *text)
+{
+  size_t length = strlen(text);
+
+  memset(line, ' ', 16u);
+  if (length > 16u)
+  {
+    length = 16u;
+  }
+  memcpy(line, text, length);
+}
+
 static void test_init(void)
 {
   cry_face_init();
@@ -41,8 +53,9 @@ static void test_init(void)
 
 static void test_replace(void)
 {
-  char line[16] = "Syntax ERROR    ";
+  char line[16];
 
+  set_line(line, "Syntax ERROR    ");
   CHECK(cry_face_replace_error(line) == 1u);
   CHECK(line[7] == (char)CRY_FACE_SLOT);
   CHECK(line[0] == ' ');
@@ -51,18 +64,22 @@ static void test_replace(void)
 
 static void test_preserve_ready(void)
 {
-  char line[16] = "READY           ";
-  char expected[16] = "READY           ";
+  char line[16];
+  char expected[16];
 
+  set_line(line, "READY           ");
+  set_line(expected, "READY           ");
   CHECK(cry_face_replace_error(line) == 0u);
   CHECK(memcmp(line, expected, sizeof(line)) == 0);
 }
 
 static void test_match_bounds(void)
 {
-  char start[16] = "ERROR           ";
-  char end[16] = "           ERROR";
+  char start[16];
+  char end[16];
 
+  set_line(start, "ERROR           ");
+  set_line(end, "           ERROR");
   CHECK(cry_face_replace_error(start) == 1u);
   CHECK(start[0] == (char)CRY_FACE_SLOT);
 
