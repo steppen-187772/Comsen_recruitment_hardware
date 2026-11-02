@@ -19,8 +19,8 @@ uint8_t cry_face_replace_error(char line[16])
     if ((line[i] == 'E') && (line[i + 1u] == 'R') && (line[i + 2u] == 'R') &&
         (line[i + 3u] == 'O') && (line[i + 4u] == 'R'))
     {
-      memset(line, ' ', 16u);
-      line[i] = (char)CRY_FACE_SLOT;
+      memset(&line[i], ' ', 16u - i);
+      line[15] = (char)CRY_FACE_SLOT;
       return 1u;
     }
   }

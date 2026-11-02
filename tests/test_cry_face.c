@@ -57,9 +57,9 @@ static void test_replace(void)
 
   set_line(line, "Syntax ERROR    ");
   CHECK(cry_face_replace_error(line) == 1u);
-  CHECK(line[7] == (char)CRY_FACE_SLOT);
-  CHECK(line[0] == ' ');
-  CHECK(line[15] == ' ');
+  CHECK(memcmp(line, "Syntax", 6u) == 0);
+  CHECK(line[6] == ' ');
+  CHECK(line[15] == (char)CRY_FACE_SLOT);
 }
 
 static void test_preserve_ready(void)
@@ -81,10 +81,10 @@ static void test_match_bounds(void)
   set_line(start, "ERROR           ");
   set_line(end, "           ERROR");
   CHECK(cry_face_replace_error(start) == 1u);
-  CHECK(start[0] == (char)CRY_FACE_SLOT);
+  CHECK(start[15] == (char)CRY_FACE_SLOT);
 
   CHECK(cry_face_replace_error(end) == 1u);
-  CHECK(end[11] == (char)CRY_FACE_SLOT);
+  CHECK(end[15] == (char)CRY_FACE_SLOT);
 }
 
 int main(void)
