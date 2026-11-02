@@ -31,7 +31,7 @@ submission/
 ├── README.md              ← 本文件
 ├── REPORT.md              ← 报告（提交前请确认是本人最终版本）
 ├── video/                 ← 视频说明；高清视频见Releases
-├── innovations/           ← 创新模块：数字雨锁屏 + 哭脸报错（不参与主固件构建）
+├── innovations/           ← 哭脸报错（已接入主固件）+ 数字雨锁屏（独立原型）
 ├── CMakeLists.txt
 ├── CMakePresets.json
 ├── Core/                  ← CubeMX 生成代码 + 自研模块
@@ -70,6 +70,7 @@ STM32_Programmer_CLI -c port=SWD -w build/Release/software.hex 0x08000000 -v -rs
 - 四则运算与 AC；
 - 运算符优先级与括号（由自研计算引擎支持）；
 - 语法错 / 除零 / 定义域错误提示；
+- 出错提示使用 CGRAM 哭脸字符替代 `ERROR` 文本；
 - 结果格式化（16 字符内自动定点/科学计数法）。
 
 说明：USB CDC 虚拟串口在独立试验固件中做了准备，
@@ -77,20 +78,21 @@ STM32_Programmer_CLI -c port=SWD -w build/Release/software.hex 0x08000000 -v -rs
 
 ## 6. 验证
 
-- 主机测试（虚拟 1602 + 假触摸芯片）：59 项断言通过；
+- 主机测试覆盖计算引擎、滤波器和哭脸错误替换；
 - 单模块替换测试：每次只替换一个 `.a`，其余保持官方；
 - 烧录校验：STM32CubeProgrammer 下载校验 + 板上回读比对；
-- 最终固件：Flash 43,856 B / 64KB（66.92%），RAM 13,176 B / 20KB（64.34%）。
+- 最终固件：Flash 44,040 B / 64KB（67.20%），RAM 13,176 B / 20KB（64.34%）。
 
-## 7. 创新模块（独立）
+## 7. 创新模块
 
-`innovations/` 中提供两个独立模块：
+`innovations/` 中提供两个模块：
 
 - 数字雨锁屏（`lock_screen.c/.h`）；
 - 哭脸报错（`cry_face.c/.h`，用 CGRAM 字符替代 `ERROR`）。
 
-它们来自另一个试验固件，**不参与本计算器主工程的构建**，
-接入方法见 `innovations/README_创新模块说明.md`。
+哭脸报错已经加入 CMake，并在 `lcd1602_init()` 和 `lcd1602_write_lines()` 中实际调用。
+数字雨锁屏仍是独立试验固件中的原型，不参与本稳定计算器主工程的构建。
+详细说明见 `innovations/README_创新模块说明.md`。
 
 ## 8. 验收视频
 

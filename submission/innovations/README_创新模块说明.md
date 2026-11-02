@@ -1,8 +1,8 @@
 # 创新模块说明：数字雨锁屏 + 哭脸报错
 
-> 这两个模块来自 `build/innovation_lockrain_v4`（数字雨锁屏固件），
-> 已从工程中拆成独立源码，与 `code/src` 下的其它模块并列放置。
-> 它们**不参与**稳定计算器固件（保三换三）的构建，单独给创新版本使用。
+> 这两个模块来自 `build/innovation_lockrain_v4`（数字雨锁屏固件）。
+> 哭脸报错已经接入稳定计算器固件；数字雨锁屏仍作为独立试验固件保留，
+> 不参与当前“保三换三”主工程构建。
 
 ---
 
@@ -61,21 +61,24 @@ void lcd1602_write_frame(...)
 
 ### 3.2 哭脸报错
 
-1. 在 `lcd1602_init()` 里注册哭脸字符：
+哭脸报错已经完成以下接入，调用方不需要额外修改：
+
+1. `submission/CMakeLists.txt` 编译 `innovations/cry_face.c`，并加入 `innovations` 头文件目录。
+2. 在 `lcd1602_init()` 里注册哭脸字符：
 
 ```c
 cry_face_init();       /* CGRAM 槽位 2 */
 ```
 
-2. 写屏前处理两行缓冲：
+3. `lcd1602_write_lines()` 在写屏前处理两行副本：
 
 ```c
 char l1[16], l2[16];
-memcpy(l1, line1, 16);
-memcpy(l2, line2, 16);
+memcpy(l1, line1, sizeof(l1));
+memcpy(l2, line2, sizeof(l2));
 cry_face_replace_error(l1);
 cry_face_replace_error(l2);
-lcd1602_write_lines(l1, l2);
+/* 随后写入 LCD */
 ```
 
 > 旧代码如果调用 `lock_screen_apply_error_face()`，它仍然可用：

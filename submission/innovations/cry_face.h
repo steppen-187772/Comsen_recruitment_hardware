@@ -13,7 +13,7 @@
 
 #define CRY_FACE_SLOT 2u
 
-void    cry_face_init(void);
+void cry_face_init(void);
 uint8_t cry_face_replace_error(char line[16]);
 
 #endif /* CRY_FACE_H */

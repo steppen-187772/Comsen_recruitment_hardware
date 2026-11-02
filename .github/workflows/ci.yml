@@ -57,6 +57,18 @@ jobs:
       - name: Run tests
         run: ./build/host/core_tests
 
+      - name: Compile cry-face host tests
+        run: |
+          gcc -std=c11 -Wall -Wextra -Werror \
+            -Isubmission/Core/Inc \
+            -Isubmission/innovations \
+            tests/test_cry_face.c \
+            submission/innovations/cry_face.c \
+            -o build/host/cry_face_tests
+
+      - name: Run cry-face host tests
+        run: ./build/host/cry_face_tests
+
       - name: Enforce core coverage
         run: |
           gcovr \
@@ -86,6 +98,9 @@ jobs:
             submission/Core/Inc/calculator_engine.h \
             submission/Core/Inc/lcd1602.h \
             submission/Core/Inc/touch_filter.h \
+            submission/innovations/cry_face.c \
+            submission/innovations/cry_face.h \
+            tests/test_cry_face.c \
             tests/test_core.c
 
   pull-request-title:

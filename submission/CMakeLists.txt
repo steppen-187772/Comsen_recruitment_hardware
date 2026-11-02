@@ -48,11 +48,13 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/touch_filter.c
     Core/Src/lcd1602.c
     Core/Src/bsp_delay.c
+    innovations/cry_face.c
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
+    innovations
 )
 
 # Add project symbols (macros)

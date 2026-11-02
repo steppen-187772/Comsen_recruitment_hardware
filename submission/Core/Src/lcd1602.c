@@ -1,6 +1,9 @@
 #include "lcd1602.h"
 #include "board_config.h"
 #include "bsp_delay.h"
+#include "cry_face.h"
+
+#include <string.h>
 
 /*
  * 1602 字符液晶驱动（HD44780 兼容，4 位模式）
@@ -123,22 +126,31 @@ void lcd1602_init(void)
     lcd1602_define_char(LCD1602_CHAR_ANGLE, angle_char);
   }
 
+  cry_face_init();
+
   lcd_cmd(0x01u);
 }
 
 void lcd1602_write_lines(const char line1[16], const char line2[16])
 {
   uint8_t i;
+  char rendered_line1[16];
+  char rendered_line2[16];
+
+  memcpy(rendered_line1, line1, sizeof(rendered_line1));
+  memcpy(rendered_line2, line2, sizeof(rendered_line2));
+  cry_face_replace_error(rendered_line1);
+  cry_face_replace_error(rendered_line2);
 
   lcd_set_cursor(0u, 0u);
   for (i = 0u; i < 16u; i++)
   {
-    lcd_data((uint8_t)line1[i]);
+    lcd_data((uint8_t)rendered_line1[i]);
   }
   lcd_set_cursor(1u, 0u);
   for (i = 0u; i < 16u; i++)
   {
-    lcd_data((uint8_t)line2[i]);
+    lcd_data((uint8_t)rendered_line2[i]);
   }
 }
 
